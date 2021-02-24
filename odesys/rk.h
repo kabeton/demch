@@ -14,7 +14,8 @@ double norm(std::valarray<double> el) {
 
 double sol_dist(std::vector<std::valarray<double>> s1, std::vector<std::valarray<double>> s2) {
   double t = 0, tm = -DBL_MAX;
-  for(int i = 0; i < s2.size(); i++) {
+  int total_points = s2.size();
+  for(int i = 0; i < total_points; i++) {
     t = norm(s1[i*2] - s2[i]);
     if(t > tm) tm = t;
   }
@@ -83,7 +84,9 @@ public:
     table << std::setprecision(9);
     int sols = sol_seq.size();
     for(int i = 0; i < sols; i++) {
-      table << "--------------------------------------------------------------------------" << std::endl;
+      table << "h = " << h_seq[i] << " \\\\ " << std::endl;
+      table << "\\begin{tabular}{c | c c c c c c c}" << std::endl;
+      table << "$i$ & $x_i$ & $y_1(x_i)$ & $[y_1]_{x_i}$ & $|[y_1]_{x_i} - y_1(x_i)|$ & $y_2(x_i)$ & $[y_2]_{x_i}$ & $|[y_2]_{x_i} - y_2(x_i)|$ \\\\ \\hline" << std::endl;
       int k = 1;
       for(int j = 1*pow(2, i); j < sol_seq[i].size() - 1; j+= pow(2, i)) {
         double c0, c1, m0, m1;
@@ -91,10 +94,11 @@ public:
         c1 = sol_seq[i][j][1];
         m0 = sol_seq.back()[k*pow(2,sols-1)][0];
         m1 = sol_seq.back()[k*pow(2, sols-1)][1];
-        table << j << " | " << x0 + h_seq[i]*j << " | " << c0 << " | " << m0 << " | " << fabs(c0 - m0) << " | "
-         << c1 << " | " << m1 << " | " << fabs(c1 - m1) << std::endl;
+        table << j << " & " << x0 + h_seq[i]*j << " & " << c0 << " & " << m0 << " & " << fabs(c0 - m0) << " & "
+         << c1 << " & " << m1 << " & " << fabs(c1 - m1) << " \\\\" << std::endl;
         k++;
       }
+      table << "\\end{tabular}" << std::endl << std::endl;
     }
   }
 
@@ -122,6 +126,12 @@ public:
   imp_euler1(double _x0, double _xl, std::valarray<double> _y0, func _rhs): solver(_x0, _xl, _y0, _rhs){};
 
   std::valarray<double> step(int i, double h, std::valarray<double> pr) {
-    return pr; 
+    double a = -49;
+    double b = 125;
+    double c = 20;
+    double d = -49;
+    double coef = 1/(a*d - c*b);
+    
+    return {coef*(d*pr[0] - b*pr[1]), coef*(-c*pr[1] + a*pr[0])}; 
   }
 };
