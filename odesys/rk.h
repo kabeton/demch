@@ -126,12 +126,12 @@ public:
   imp_euler1(double _x0, double _xl, std::valarray<double> _y0, func _rhs): solver(_x0, _xl, _y0, _rhs){};
 
   std::valarray<double> step(int i, double h, std::valarray<double> pr) {
-    double a = -49;
-    double b = 125;
-    double c = 20;
-    double d = -49;
+    double a = 1 - 99*h;
+    double b = -250*h;
+    double c = -40*h;
+    double d = 1 - 99*h;
     double coef = 1/(a*d - c*b);
     
-    return {coef*(d*pr[0] - b*pr[1]), coef*(-c*pr[1] + a*pr[0])}; 
+    return {coef*(d*pr[0] - b*pr[1]), coef*(-c*pr[0] + a*pr[1])}; 
   }
 };
