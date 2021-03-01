@@ -12,14 +12,15 @@ std::valarray<double> rhs(double x, std::valarray<double> y) {
 }
 
 int main() {
-  double A = 1, B = 1;
+  double A = -5, B = 2;
   std::valarray<double> y0(2);
   y0[0] = A;
   y0[1] = B;
-  const double x0 = 0, D = 1;
+  const double x0 = 0, D = 20;
   rk4 Solver(x0, D, y0, rhs);
   Solver.solve_precision(10e-7);
   Solver.store_last();
   Solver.gen_table();
+  Solver.store_error();
   return 0;
 }

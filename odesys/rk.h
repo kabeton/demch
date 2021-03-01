@@ -15,7 +15,7 @@ double norm(std::valarray<double> el) {
 double sol_dist(std::vector<std::valarray<double>> s1, std::vector<std::valarray<double>> s2) {
   double t = 0, tm = -DBL_MAX;
   int total_points = s2.size();
-  for(int i = 0; i < total_points; i++) {
+  for(int i = 0; i < total_points; i+= total_points/10) {
     t = norm(s1[i*2] - s2[i]);
     if(t > tm) tm = t;
   }
@@ -28,6 +28,7 @@ private:
   std::valarray<double> y0;
   std::vector<std::vector<std::valarray<double>>> sol_seq;
   std::vector<double> h_seq;
+  std::vector<double> err_seq;
 protected:
   int dims;
   double x0, xl;
@@ -60,15 +61,22 @@ public:
   }
 
   void solve_precision(double eps) {
+    std::ofstream rerr("errhist.dat");
+    int times = 2;
     double h0 = (xl - x0) / 10;
     solve_step(h0);
     double h = h0 / 2;
     solve_step(h);
-    double local_err = eps + 1;
-    while(local_err > eps) { 
+    double local_err = sol_dist(sol_seq[sol_seq.size()-1], sol_seq[sol_seq.size() - 2]);
+    err_seq.push_back(local_err);
+    rerr << h << " " << err_seq.back() << std::endl;
+    while((local_err > eps) || (times < 15)) { 
       h /= 2;
       solve_step(h);
+      times++;
       local_err = sol_dist(sol_seq[sol_seq.size()-1], sol_seq[sol_seq.size() - 2]);
+      err_seq.push_back(local_err);
+      rerr << h << " " << (xl - x0)/h << " " << err_seq.back() << std::endl;
     }
   }
 
@@ -76,6 +84,13 @@ public:
     std::ofstream out("trail.dat");
     for(int i = 0; i < (xl - x0) / h_seq.back(); i++) {
       out << x0 + i*h_seq.back() << " " << sol_seq.back()[i][0] << " " << sol_seq.back()[i][1] << std::endl;
+    }
+  }
+
+  void store_error() {
+    std::ofstream out("errors.dat");
+    for(int i = 0; i < err_seq.size(); i++) {
+      out << (xl - x0)/h_seq[i] << " " << err_seq[i] << std::endl;
     }
   }
 
