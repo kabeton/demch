@@ -1,0 +1,147 @@
+\documentclass[11pt]{article}
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+
+\usepackage{hyphenat}
+\hyphenation{ма-те-ма-ти-ка вос-ста-нав-ли-вать}
+
+\usepackage[a4paper,margin=2cm]{geometry}
+
+\usepackage{graphicx}
+\usepackage[intlimits]{amsmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{mathtools}
+\usepackage{tensor}
+\usepackage{pgf}
+\usepackage{array}
+\usepackage[utf8]{inputenc}\DeclareUnicodeCharacter{2212}{-}
+
+\newcommand{\rot}[1]{[\nabla, \mathbf{#1}]}
+\newcommand{\di}[1]{(\nabla, \mathbf{#1})}
+\newcommand{\ve}[1]{\mathbf{#1}}
+\newcommand{\re}[1]{(\ref{#1})}
+
+
+\begin{document}
+\subsubsection*{Работа №3}
+ Задача: найти первые четыре собственных значения задачи Штурма-Лиувилля:
+ \[
+  \begin{dcases} 
+   \frac{d}{dx}\left((2-x)\frac{dy}{dx}\right) + \frac{\lambda x^2 y}{1 + x} = 0, \\
+   y'(0) = y(1) = 0.
+  \end{dcases}
+\]
+\subsubsection*{Модельная задача}
+В качестве модельной рассмотрим задачу (граничные условия те же):
+\[
+ 2\frac{d^2y}{dx^2} + \lambda y = 0
+\]
+Ее аналитическое решение:
+\[
+ y = C_1 \cos\left(\sqrt{\frac{\lambda}{2}}x\right) + C_2\sin\left(\sqrt{\frac{\lambda}{2}}x\right)
+\]
+\[
+ y' = -\sqrt{\frac{\lambda}{2}}C_1 \sin\left(\sqrt{\frac{\lambda}{2}}x\right) + \sqrt{\frac{\lambda}{2}}C_2 \cos\left(\sqrt{\frac{\lambda}{2}}x\right)
+\]
+\[
+ y'(0) = 0 \Rightarrow C_2 = 0
+\]
+\[
+ y(1) = 0 \Rightarrow C_1 \cos\left(\sqrt{\frac{\lambda}{2}}x\right) = 0
+\]
+Нетривиальное решение есть при $\sqrt{\frac{\lambda}{2}} = \frac{\pi}{2} + \pi k \Rightarrow \lambda = 2\left(\frac{\pi}{2} + \pi k\right)^2$
+Первые четыре собственных значения:
+\[
+ \lambda_1 = 4.9348022 
+ \]
+ \[
+ \lambda_2 = 44.4132198 
+ \]
+ \[
+ \lambda_3 = 123.370055 
+ \]
+ \[
+ \lambda_4 = 241.805307
+\]
+
+\subsubsection*{Модельная задача}
+Введем на отрезке $[0, 1]$ сетку:
+\[
+ D_h = \{ x_l | x_l = hl; j=0..L; hL = 1\}
+\]
+Аппроксимируем вторую производную и граничные условия как:
+\[
+ 2 \frac{y_{l + 1} - 2y_l + y_{l - 1}}{h^2} + \lambda y_l = 0
+\]
+\[
+ y_{l+1} + y_l\left(\frac{\lambda h^2}{2} - 2\right) + y_{l-1} = 0
+\]
+\[
+ y'(0) = \frac{y_2 - y_0}{2h} = 0 \Rightarrow y_0 - y_2 = 0
+\]
+\[
+ y_L = 0;
+\]
+Обозначив $a_l = 1$, $c_l = 1$, $b_l = \frac{\lambda h^2}{2} - 2$, получим систему вида:
+\[
+  \begin{dcases} 
+  y_0 - y_2 = 0, \\
+   a_l y_{l-1} + b_l y_l + c_l y_{l+1} = 0, l=1..L-1 \\
+   y_L = 0.
+  \end{dcases}
+\]
+У нее почти тридиагональная матрица; ее можно свести к верхнетреугольной и посчитать определитель.
+
+\subsubsection*{Порядок аппроксимации}
+Разложение в ряд Тейлора относительно l-го узла:
+\[
+ y_{l\pm1} = y_l \pm h[y']_l + h^2/2[y'']_l \pm h^3/6 [y''']_l + O(h^4)
+\]
+Подставим в уравнение системы:
+\[
+ y_l + h[y']_l + \frac{h^2}{2}[y'']_l + \frac{h^3}{6}[y''']_l + y_l\frac{\lambda h^2}{2} - 2y_l + y_l - h[y']_l + \frac{h^2}{2}[y'']_l - \frac{h^3}{6}[y''']_l + O(h^4) = 0 \hspace{0.25cm}|:\frac{h^2}{2}
+\]
+\[
+ [y'']_l + \frac{\lambda}{2}y_l + O(h^2) = 0
+\]
+Граничные условия тоже записаны с порядком аппроксимации 2, поэтому для всей схемы имеем $O(h^2)$.
+
+
+\subsubsection*{Задача с переменными коэффициентами}
+Пусть $2 - x = q(x)$, $x^2/(1+x) = p(x)$. Введем на отрезке $[0, 1]$ сетку:
+\[
+ D_h = \{ x_l | x_l = hl; j=0..L; hL = 1\}
+\]
+Также обозначим $q(x_l) = q_l$, $p(x_l) = p_l$, $y(x_l) = y_l$. \\
+Построим конечно-разностную аппроксимацию для второй производной:
+\[
+ \frac{q_{l+1} \left[\frac{dy}{dx}\right]_{l+1} - q_{l-1}\left[\frac{dy}{dx}\right]_{l-1}}{2h} = \frac{q_{l+1}(y_{l-1} -4y_l +3y_{l+1}) - q_{l-1}(-3y_{l-1} + 4y_l - y_{l+1})}{4h^2} =  
+\]
+\[
+ = \frac{y_{l+1}(3q_{l+1} + q_{l-1}) -4y_l(q_{l+1} + q_{l-1}) + y_{l-1}(3q_{l-1} + q_{l+1})}{4h^2}
+\]
+В итоге получим:
+\[
+ y_{l+1}(3q_{l+1} + q_{l-1}) + y_{l-1}(3q_{l-1} + q_{l+1}) + 4y_l(h^2\lambda p_l - (q_{l+1} + q_{l-1})) = 0
+\]
+Обозначив $a_l = 3q_{l-1} + q_{l+1}$, $b_l = 4(h^2\lambda p_l - (q_{l+1} + q_{l-1})$, $c_l = 3q_{l+1} + q_{l-1}$ и приблизив граничные условия, получим систему того же вида, что и в модельной задаче:
+\[
+  \begin{dcases} 
+  y_0 - y_2 = 0, \\
+   a_l y_{l-1} + b_l y_l + c_l y_{l+1} = 0, l=1..L-1 \\
+   y_L = 0.
+  \end{dcases}
+\]
+
+\subsubsection*{Результаты}
+
+Последовательность вычислений, оценка погрешности и полученные значения приведены в приложенныйх файлах model.txt и errors.txt. Для оценки точности я брал максимальную разность между полученными при удвоении сетки числами для всех собственных значений. Видно, что при удвоении числа узлов погрешность уменьшается примерно вдвое до определенного момента, после чего перестает, скорее всего, из-за начинающихся ошибок округления. 
+
+\end{document}
