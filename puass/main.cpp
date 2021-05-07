@@ -95,15 +95,22 @@ double norm(Eigen::ArrayXXd f, Eigen::ArrayXXd s) {
   double ma = -DBL_MAX;
   std::cout << std::setw(9) << "(x,y)" << " : " \
             << std::setw(9) << "u" << " | " << std::setw(9) << "u_an" \
-            << " | " << std::setw(9) << "norm" << std::endl;
+            << " | " << std::setw(9) << "error" << std::endl;
   std::cout << "---------------------------------------------" << std::endl;
   for(int l = 0; l < f.rows(); l += step) {
     for(int m = 0; m < f.cols(); m += step) {
-      double d = fabs(f(l, m) - s(l, m));
-      std::cout << "(" << std::fixed << std::setprecision(1) << l*(1./(f.rows() - 1)) << "," << m*(1./(s.rows() - 1)) << ") : " \
-                << std::setprecision(5) << std::setw(9) << f(l, m) << " | " << std::setw(9) << s(l, m) \
-                << " | " << std::setw(9) <<  d << std::endl;
-      if(d > ma) ma = d;
+      if((l != 0) && (l != f.rows() - 1) && (m != 0) && (m != f.cols() - 1)) {
+        double d = fabs(f(l, m) - s(l, m));
+        std::cout << "(" << std::fixed << std::setprecision(1) << l*(1./(f.rows() - 1)) << "," << m*(1./(s.rows() - 1)) << ") : " \
+                  << std::setprecision(5) << std::setw(9) << f(l, m) << " | " << std::setw(9) << s(l, m) \
+                  << " | " << std::setw(9) <<  d << std::endl;
+        if(d > ma) ma = d;
+      } else {
+        double d = 0;
+        std::cout << "(" << std::fixed << std::setprecision(1) << l*(1./(f.rows() - 1)) << "," << m*(1./(s.rows() - 1)) << ") : " \
+                  << std::setprecision(5) << std::setw(9) << f(l, m) << " | " << std::setw(9) << s(l, m) \
+                  << " | " << std::setw(9) << "boundary" << std::endl;
+      }
     }
   }
   return ma;
@@ -131,7 +138,7 @@ int main(int argc, char *argv[]) {
 
   double dist = norm(u, uan);
 
-  std::cout << "max distance: " <<  dist << std::endl;
+  std::cout << "max error : " <<  dist << std::endl;
 
   return 0;
 }
