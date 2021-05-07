@@ -79,9 +79,9 @@ Eigen::ArrayXXd get_sol(std::vector<int> chseq, int L, int M) {
 
     for(int l = 1; l < L; l++) {
       for(int m = 1; m < M; m++) {
-        u(l, m) = up(l, m) + tn*(up(l + 1, m) - 2*up(l, m) + up(l - 1, m))/hx/hx + \
-                             tn*(up(l, m + 1) - 2*up(l, m) + up(l, m - 1))/hy/hy + \
-                             25*M_PI*M_PI*tn*sin(3*M_PI*l*hx)*sin(4*M_PI*m*hy);
+        u(l, m) = up(l, m) + tn*((up(l + 1, m) - 2*up(l, m) + up(l - 1, m))/hx/hx + \
+                                 (up(l, m + 1) - 2*up(l, m) + up(l, m - 1))/hy/hy + \
+                                  25*M_PI*M_PI*sin(3*M_PI*l*hx)*sin(4*M_PI*m*hy));
       }
     }
     up = u;
@@ -91,13 +91,16 @@ Eigen::ArrayXXd get_sol(std::vector<int> chseq, int L, int M) {
 }
 
 double norm(Eigen::ArrayXXd f, Eigen::ArrayXXd s) {
-  int step = (int)(f.rows()/5);
+  int step = (int)((f.rows() - 1)/5);
   double ma = -DBL_MAX;
-  std::cout.precision(5);
+  std::cout << std::setw(9) << "(x,y)" << " : " \
+            << std::setw(9) << "u" << " | " << std::setw(9) << "u_an" \
+            << " | " << std::setw(9) << "norm" << std::endl;
+  std::cout << "---------------------------------------------" << std::endl;
   for(int l = 0; l < f.rows(); l += step) {
     for(int m = 0; m < f.cols(); m += step) {
       double d = fabs(f(l, m) - s(l, m));
-      std::cout << std::fixed << std::setprecision(1) << l*(1./f.rows()) << "," << m*(1./s.rows()) << " : " \
+      std::cout << "(" << std::fixed << std::setprecision(1) << l*(1./(f.rows() - 1)) << "," << m*(1./(s.rows() - 1)) << ") : " \
                 << std::setprecision(5) << std::setw(9) << f(l, m) << " | " << std::setw(9) << s(l, m) \
                 << " | " << std::setw(9) <<  d << std::endl;
       if(d > ma) ma = d;
@@ -106,10 +109,17 @@ double norm(Eigen::ArrayXXd f, Eigen::ArrayXXd s) {
   return ma;
 }
 
-int main() {
-  int L = 5, M = 5;
-  double hx = 0.2, hy = 0.2;
-  int N = 260;
+int main(int argc, char *argv[]) {
+  int L = 150, M = 150;
+  double hx = 1./L, hy = 1./M;
+  double eps=1e-4;
+  double maxm = 4*((cos(M_PI/2/L)*cos(M_PI/2/L))/hx/hx + (cos(M_PI/2/M)*cos(M_PI/2/M))/hy/hy);
+  double minm = 4*((sin(M_PI/2/L)*sin(M_PI/2/L))/hx/hx + (sin(M_PI/2/M)*sin(M_PI/2/M))/hy/hy);
+
+  //волшебная формула с оценкой из учебника демча
+  int N = (int)(log(2/eps)/log((sqrt(maxm) + sqrt(minm))/(sqrt(maxm) - sqrt(minm)))) + 1;
+  if(argc == 2) N = atoi(argv[1]);
+  std::cout << "N = " << N << std::endl;
 
   std::vector<int> iseq = cheb(N);
 
@@ -121,7 +131,7 @@ int main() {
 
   double dist = norm(u, uan);
 
-  std::cout << dist << std::endl;
+  std::cout << "max distance: " <<  dist << std::endl;
 
   return 0;
 }
