@@ -25,7 +25,7 @@ std::vector<int> cheb(int N)
     if(it != nseq.rend() - 1) n++;
     if(*it % 2 == 0) {
       vl.resize(*it);
-      if(*n == *it * 2) {
+      if(*n % 2 == 0) {
         for(int i = 0; i < vp.size(); i++) {
           vl[2*i] = vp[i];
           vl[2*i + 1] = 4 * *it/2 - vp[i];
@@ -129,6 +129,10 @@ int main(int argc, char *argv[]) {
   std::cout << "N = " << N << std::endl;
 
   std::vector<int> iseq = cheb(N);
+  for(auto it : iseq) {
+    std::cout << it << " ";
+  }
+  std::cout << std::endl;
 
   Eigen::ArrayXXd u(L + 1, M + 1);
   Eigen::ArrayXXd uan(L + 1, M + 1);
