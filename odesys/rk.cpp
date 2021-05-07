@@ -12,7 +12,7 @@ std::valarray<double> rhs(double x, std::valarray<double> y) {
 }
 
 int main() {
-  double A = -5, B = 2;
+  double A = -5, B = -2;
   std::valarray<double> y0(2);
   y0[0] = A;
   y0[1] = B;
