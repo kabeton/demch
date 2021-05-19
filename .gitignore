@@ -1,6 +1,9 @@
 gonka/
 .ipynb_checkpoints/
 *.docx
+out*.txt
+*.txt
+final4.pdf
 *.o
 *.out
 .vscode/

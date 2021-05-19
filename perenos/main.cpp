@@ -7,7 +7,8 @@
 
 int main(int argc, char *argv[]) {
   int NX = atoi(argv[1]);
-  double h = 1. / NX, tau = h/6;
+  //double h = 1. / NX, tau = 36*6/100*h;
+  double h = 1. / NX, tau = 4*h;
   int NT = (int)(1/tau);
 
   Eigen::ArrayXXd u(NX + 1, NT + 1);
@@ -44,8 +45,7 @@ int main(int argc, char *argv[]) {
   int xst = NX / 10;
   double dmax = -DBL_MAX;
   std::cout << "t = " << (NT)*tau << std::endl;
-  std::cout << std::setw(3) << " x " << std::setw(10) << " u computed " << std::setw(10) << " u analitic " \
-            << std::setw(10) << " error" << std::endl;
+  std::cout << "NX = " << NX << std::endl;;
   
   for(int i = 0; i <= 10; i++) {
     double diff = fabs(u(i*xst, NT) - uan(i*xst, NT));
@@ -53,8 +53,9 @@ int main(int argc, char *argv[]) {
   }
 
   int mord = ((-1*(int)log10(dmax) + 1) >= 0) ? (-1*(int)log10(dmax) + 1) : 8;
-  std::cout << mord << std::endl;
   std::cout << std::setprecision(mord);
+  std::cout << std::setw(3) << " x " << std::setw(mord + 2) << " u computed " << std::setw(mord + 2) << " u analitic " \
+            << std::setw(mord + 2) << " error" << std::endl;
   for(int i = 0; i <= 10; i++) {
     double diff = fabs(u(i*xst, NT) - uan(i*xst, NT));
     std::cout << std::setw(3) << i*xst*h << " " << std::setw(mord + 2) << u(i*xst, NT) << " " << std::setw(mord + 2) \

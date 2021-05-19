@@ -129,10 +129,12 @@ int main(int argc, char *argv[]) {
   std::cout << "N = " << N << std::endl;
 
   std::vector<int> iseq = cheb(N);
+  
   for(auto it : iseq) {
     std::cout << it << " ";
   }
   std::cout << std::endl;
+  
 
   Eigen::ArrayXXd u(L + 1, M + 1);
   Eigen::ArrayXXd uan(L + 1, M + 1);
