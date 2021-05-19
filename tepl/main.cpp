@@ -23,7 +23,7 @@ Eigen::ArrayXd tridiag_solve(Eigen::ArrayXd &a, Eigen::ArrayXd &b, Eigen::ArrayX
 
 int main(int argc, char *argv[]) {
   int N = atoi(argv[1]);
-  int L = 50, M = 50;
+  int L = 150, M = 150;
   double hr = 1./L, hf = M_PI/2/M, tau = 1./N;
   double eps = 1e-4;
   std::cout << "L = M = " << L << std::endl;
